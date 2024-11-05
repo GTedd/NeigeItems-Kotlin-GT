@@ -26,11 +26,34 @@ import pers.neige.neigeitems.ref.item.shield.RefTileEntityBanner;
 import pers.neige.neigeitems.ref.nbt.*;
 import pers.neige.neigeitems.ref.util.RefCraftMagicNumbers;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TranslationUtils {
+    protected static final Map<String, RefChatFormatting> CHAT_COLORS = new HashMap<>();
     /**
      * 1.13+ 版本起, EntityTypes 类发生了一些巨大的变化.
      */
     private static final boolean NEW_ENTITY_TYPE_SUPPORT = CbVersion.v1_13_R1.isSupport();
+
+    static {
+        CHAT_COLORS.put("BLACK", RefChatFormatting.BLACK);
+        CHAT_COLORS.put("DARK_BLUE", RefChatFormatting.DARK_BLUE);
+        CHAT_COLORS.put("DARK_GREEN", RefChatFormatting.DARK_GREEN);
+        CHAT_COLORS.put("DARK_AQUA", RefChatFormatting.DARK_AQUA);
+        CHAT_COLORS.put("DARK_RED", RefChatFormatting.DARK_RED);
+        CHAT_COLORS.put("DARK_PURPLE", RefChatFormatting.DARK_PURPLE);
+        CHAT_COLORS.put("GOLD", RefChatFormatting.GOLD);
+        CHAT_COLORS.put("GRAY", RefChatFormatting.GRAY);
+        CHAT_COLORS.put("DARK_GRAY", RefChatFormatting.DARK_GRAY);
+        CHAT_COLORS.put("BLUE", RefChatFormatting.BLUE);
+        CHAT_COLORS.put("GREEN", RefChatFormatting.GREEN);
+        CHAT_COLORS.put("AQUA", RefChatFormatting.AQUA);
+        CHAT_COLORS.put("RED", RefChatFormatting.RED);
+        CHAT_COLORS.put("LIGHT_PURPLE", RefChatFormatting.LIGHT_PURPLE);
+        CHAT_COLORS.put("YELLOW", RefChatFormatting.YELLOW);
+        CHAT_COLORS.put("WHITE", RefChatFormatting.WHITE);
+    }
 
     /**
      * 根据物品获取显示名, 无显示名则返回翻译名.
@@ -79,6 +102,31 @@ public class TranslationUtils {
             }
         }
         return null;
+    }
+
+    /**
+     * 根据CraftItemStack获取显示名, 无显示名或物品为org.bukkit.inventory.ItemStack则返回 null, 仅适用于1.20.4及以下版本.
+     *
+     * @param itemStack 待获取物品.
+     * @return 显示名.
+     */
+    @Nullable
+    public static String getDisplayNameFromCraftItemStack(@Nullable ItemStack itemStack) {
+        if (!(itemStack instanceof RefCraftItemStack) || itemStack.getType() == Material.AIR) return null;
+        RefNbtTagCompound tag = ((RefCraftItemStack) itemStack).handle.getTag();
+        if (tag == null) return null;
+        RefNbtBase display = tag.get("display");
+        if (!(display instanceof RefNbtTagCompound)) return null;
+        RefNbtBase tagName = ((RefNbtTagCompound) display).get("Name");
+        if (!(tagName instanceof RefNbtTagString)) return null;
+        String rawName = tagName.asString();
+        if (CbVersion.current() == CbVersion.v1_12_R1) {
+            return rawName;
+        } else if (CbVersion.v1_15_R1.isSupport()) {
+            return RefCraftChatMessage.fromComponent(RefChatSerializer.fromJson(rawName));
+        } else {
+            return RefCraftChatMessage.fromComponent(RefChatSerializer.fromJson(rawName), RefChatFormatting.WHITE);
+        }
     }
 
     /**

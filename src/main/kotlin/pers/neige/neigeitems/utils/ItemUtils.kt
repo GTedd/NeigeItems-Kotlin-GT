@@ -20,6 +20,8 @@ import pers.neige.neigeitems.manager.HookerManager.easyItemHooker
 import pers.neige.neigeitems.manager.HookerManager.getHookedItem
 import pers.neige.neigeitems.manager.HookerManager.mythicMobsHooker
 import pers.neige.neigeitems.manager.ItemManager
+import pers.neige.neigeitems.utils.ItemUtils.getItemId
+import pers.neige.neigeitems.utils.ItemUtils.getNbt
 import pers.neige.neigeitems.utils.PlayerUtils.setMetadataEZ
 import pers.neige.neigeitems.utils.SchedulerUtils.syncAndGet
 import pers.neige.neigeitems.utils.SectionUtils.parseSection
@@ -496,7 +498,7 @@ object ItemUtils {
             itemTag.saveToSafe(itemStack)
         }
         // 记录掉落物拥有者
-        val hide = neigeItems?.getByteOrNull("hide")
+        val hide = neigeItems?.getBoolean("hide", false)
         return syncAndGet {
             this.world?.let { world ->
                 WorldUtils.dropItem(
@@ -506,8 +508,8 @@ object ItemUtils {
                     owner?.let {
                         item.setMetadataEZ("NI-Owner", it)
                     }
-                    hide?.let {
-                        item.setMetadataEZ("NI-Hide", it)
+                    if (hide == true) {
+                        item.addScoreboardTag("NI-Hide")
                     }
                     item.addScoreboardTag("NeigeItems")
                     // 掉落物技能
@@ -544,11 +546,9 @@ object ItemUtils {
             val neigeItems = itemTag.getCompound("NeigeItems") ?: return null
             // 获取物品id
             val id = neigeItems.getString("id") ?: return null
-            val data = when {
-                parseData -> neigeItems.getString("data")?.parseObject<java.util.HashMap<String, String>>()
-                else -> null
-            }
-            return ItemInfo(this, NbtItemStack(this), itemTag, neigeItems, id, data)
+            val result = ItemInfo(this, NbtItemStack(this), itemTag, neigeItems, id, null)
+            if (parseData) result.data
+            return result
         }
         return null
     }
@@ -560,11 +560,8 @@ object ItemUtils {
      */
     @JvmStatic
     fun ItemStack?.getItemId(): String? {
-        if (this != null && this.type != Material.AIR) {
-            val directTag = NbtItemStack(this).directTag
-            return directTag.getDeepString("NeigeItems.id")
-        }
-        return null
+        val directTag = HookerManager.nmsHooker.getDirectTag(this)
+        return directTag?.getDeepString("NeigeItems.id")
     }
 
     /**
@@ -1175,9 +1172,8 @@ object ItemUtils {
      */
     @JvmStatic
     fun ItemStack?.removeOwnerNbt() {
-        if (this == null || this.type == Material.AIR) return
-        val nbt = NbtItemStack(this).directTag
-        nbt.getCompound("NeigeItems")?.remove("owner")
+        val nbt = HookerManager.nmsHooker.getDirectTag(this)
+        nbt?.getCompound("NeigeItems")?.remove("owner")
     }
 
     /**

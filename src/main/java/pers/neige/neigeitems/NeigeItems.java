@@ -34,21 +34,21 @@ public class NeigeItems extends JavaPlugin {
         try {
             logger.info("loading ankh-invoke");
             AnkhInvokeBukkit.forBukkit(NeigeItems.class)
-                    .reference()
-                    .appendPackage("pers.neige.neigeitems.ref")
-                    .build()
-                    .inject()
-                    .injector(
-                            new JarTransformInjector.Builder()
-                                    .classLoader(NeigeItems.class.getClassLoader())
-                                    .transformPackage("pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.")
-                                    .build()
-                    )
-                    .build()
-                    .referenceRemap()
-                    .setApplyMapRegistry("neigeitems")
-                    .build()
-                    .build();
+                .reference()
+                .appendPackage("pers.neige.neigeitems.ref")
+                .build()
+                .inject()
+                .injector(
+                    new JarTransformInjector.Builder()
+                        .classLoader(NeigeItems.class.getClassLoader())
+                        .transformPackage("pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.")
+                        .build()
+                )
+                .build()
+                .referenceRemap()
+                .setApplyMapRegistry("neigeitems")
+                .build()
+                .build();
             logger.info("ankh-invoke loaded");
         } catch (Throwable e) {
             logger.error("failed to load ankh-invoke", e);
@@ -105,9 +105,11 @@ public class NeigeItems extends JavaPlugin {
         if (!checkMagicUtils("EntityPlayerUtils")) safe = false;
         if (!checkMagicUtils("EntityUtils")) safe = false;
         if (!checkMagicUtils("InventoryUtils")) safe = false;
-        if (!checkMagicUtils("SpigotInventoryUtils")) safe = false;
+        if (!checkMagicUtils("MathUtils")) safe = false;
+        if (!checkMagicUtils("PacketUtils")) safe = false;
         if (!checkMagicUtils("PaperInventoryUtils")) safe = false;
         if (!checkMagicUtils("ServerUtils")) safe = false;
+        if (!checkMagicUtils("SpigotInventoryUtils")) safe = false;
         if (!checkMagicUtils("TranslationUtils")) safe = false;
         if (!checkMagicUtils("WorldUtils")) safe = false;
 

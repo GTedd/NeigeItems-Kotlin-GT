@@ -11,7 +11,6 @@ import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.inventory.ItemStack
 import org.slf4j.LoggerFactory
 import pers.neige.neigeitems.event.ItemGenerateEvent
-import pers.neige.neigeitems.item.color.ItemColor
 import pers.neige.neigeitems.manager.ConfigManager
 import pers.neige.neigeitems.manager.ConfigManager.debug
 import pers.neige.neigeitems.manager.HookerManager
@@ -223,7 +222,7 @@ class ItemGenerator(val itemConfig: ItemConfig) {
                     "color" -> {
                         optionsConfig.getString(key)?.uppercase(Locale.getDefault())?.let {
                             // 判断你这颜色保不保熟
-                            if (ItemColor.colors.containsKey(it)) {
+                            if (ItemColor.getColors().containsKey(it)) {
                                 neigeItems.putString("color", it)
                             }
                         }

@@ -8,7 +8,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm") version "2.0.20"
     id("org.jetbrains.dokka") version "1.9.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.inksnow.ankh-invoke-gradle-plugin") version "1.0.13-SNAPSHOT"
+    id("org.inksnow.ankh-invoke-gradle-plugin") version "1.0.16-SNAPSHOT"
 }
 
 val realVersion = version
@@ -72,7 +72,7 @@ dependencies {
     compileOnly(fileTree("libs"))
     compileOnly("io.netty:netty-all:5.0.0.Alpha2")
     compileOnly("net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT")
-    compileOnly("org.spigotmc:spigot:1.16.5-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
     compileOnly("com.github.MilkBowl:VaultAPI:1.7")
     compileOnly("org.ow2.asm:asm:9.4")
@@ -83,6 +83,8 @@ dependencies {
     compileOnly("net.kyori:adventure-text-serializer-legacy:4.16.0")
     compileOnly("net.kyori:adventure-text-serializer-gson:4.16.0")
     compileOnly("com.github.LoneDev6:API-ItemsAdder:3.6.1")
+
+    compileOnly(project(":fake-api"))
 
     // ankh-invoke
     implementation("org.inksnow.cputil:logger:1.9")
@@ -97,7 +99,7 @@ dependencies {
     // openjdk-nashorn
     implementation(fileTree("libs/relocated-nashorn-15.4.jar"))
     // fastjson2
-    implementation("com.alibaba.fastjson2:fastjson2-kotlin:2.0.43")
+    implementation("com.alibaba.fastjson2:fastjson2-kotlin:2.0.53")
     // multiple-string-searcher
     implementation("org.neosearch.stringsearcher:multiple-string-searcher:0.1.1")
     // maven-model
@@ -217,9 +219,9 @@ tasks.create<BuildMappingsTask>("build-mappings") {
     outputDirectory = layout.buildDirectory.file("cache/build-mappings").get().asFile
     ankhInvokePackage = "pers.neige.neigeitems.libs.org.inksnow.ankhinvoke"
 
-//    mapping("nms", "1.21") {
-//        predicates = arrayOf("craftbukkit_version:{v1_21_R1}")
-//    }
+    mapping("nms", "1.21.1") {
+        predicates = arrayOf("craftbukkit_version:{v1_21_R1}")
+    }
     mapping("nms", "1.20.4") {
         predicates = arrayOf("craftbukkit_version:{v1_20_R3}")
     }
@@ -234,9 +236,6 @@ tasks.create<BuildMappingsTask>("build-mappings") {
     }
     mapping("nms", "1.18.2") {
         predicates = arrayOf("craftbukkit_version:{v1_18_R2}")
-    }
-    mapping("nms", "1.17.1") {
-        predicates = arrayOf("craftbukkit_version:{v1_17_R1}")
     }
 }
 

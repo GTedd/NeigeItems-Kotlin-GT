@@ -32,13 +32,9 @@ import pers.neige.neigeitems.hook.vault.VaultHooker
 import pers.neige.neigeitems.hook.vault.impl.VaultHookerImpl
 import pers.neige.neigeitems.item.ItemHider
 import pers.neige.neigeitems.item.ItemPlaceholder
-import pers.neige.neigeitems.item.color.ItemColor
-import pers.neige.neigeitems.item.color.impl.ItemColorProtocol
-import pers.neige.neigeitems.item.color.impl.ItemColorVanilla
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.internal.annotation.CbVersion
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.utils.TranslationUtils
 import pers.neige.neigeitems.manager.ConfigManager.config
-import java.util.*
 import java.util.function.BiFunction
 
 /**
@@ -102,17 +98,12 @@ object HookerManager {
     /**
      * 物品变量功能
      */
-    var itemPlaceholder: ItemPlaceholder? = null
+    var itemPlaceholder: ItemPlaceholder = ItemPlaceholder
 
     /**
      * 物品隐藏功能
      */
     var itemHider: ItemHider? = null
-
-    /**
-     * 物品光效功能
-     */
-    var itemColor: ItemColor? = null
 
     @JvmStatic
     @Awake(lifeCycle = Awake.LifeCycle.ENABLE, priority = EventPriority.LOW)
@@ -190,11 +181,6 @@ object HookerManager {
             }
 
         if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            itemPlaceholder = try {
-                ItemPlaceholder()
-            } catch (error: Throwable) {
-                null
-            }
             itemHider = try {
                 ItemHider()
             } catch (error: Throwable) {
@@ -202,24 +188,8 @@ object HookerManager {
             }
         } else {
             Bukkit.getLogger().info(config.getString("Messages.invalidPlugin")?.replace("{plugin}", "ProtocolLib"))
-            itemPlaceholder = null
             itemHider = null
         }
-
-        itemColor =
-            if (config.getString("ItemColor.type")?.lowercase(Locale.getDefault()) == "protocol") {
-                if (Bukkit.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                    try {
-                        ItemColorProtocol()
-                    } catch (error: Throwable) {
-                        ItemColorVanilla()
-                    }
-                } else {
-                    ItemColorVanilla()
-                }
-            } else {
-                ItemColorVanilla()
-            }
     }
 
     @JvmStatic
@@ -345,7 +315,7 @@ object HookerManager {
      */
     @JvmStatic
     fun parseItemPlaceholder(itemStack: ItemStack, text: String): String {
-        return itemPlaceholder?.parse(itemStack, text) ?: text
+        return itemPlaceholder.parse(itemStack, text)
     }
 
     /**
@@ -356,7 +326,7 @@ object HookerManager {
     @JvmStatic
     fun ItemStack.getParsedName(): String {
         TranslationUtils.getDisplayName(this)?.let { displayName ->
-            return itemPlaceholder?.parse(this, displayName) ?: displayName
+            return itemPlaceholder.parse(this, displayName)
         }
         return TranslationUtils.getTranslationName(this)
     }
@@ -369,7 +339,7 @@ object HookerManager {
     @JvmStatic
     fun ItemStack.getParsedComponent(): BaseComponent {
         TranslationUtils.getDisplayName(this)?.let { displayName ->
-            return TextComponent(itemPlaceholder?.parse(this, displayName) ?: displayName)
+            return TextComponent(itemPlaceholder.parse(this, displayName))
         }
         return TranslationUtils.getTranslationComponent(this)
     }
@@ -381,7 +351,7 @@ object HookerManager {
      */
     @JvmStatic
     fun parseItemPlaceholders(itemStack: ItemStack) {
-        itemPlaceholder?.itemParse(itemStack)
+        itemPlaceholder.itemParse(itemStack)
     }
 
     /**
@@ -392,7 +362,7 @@ object HookerManager {
      */
     @JvmStatic
     fun addItemPlaceholderExpansion(id: String, function: BiFunction<ItemStack, String, String?>) {
-        itemPlaceholder?.addExpansion(id, function)
+        itemPlaceholder.addExpansion(id, function)
     }
 
     /**
